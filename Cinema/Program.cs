@@ -3,6 +3,7 @@ using Cinema.Models;
 using Cinema.Repositories;
 using Cinema.Services;
 using Cinema.Utilities;
+using Cinema.Utilities.DbInitializer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
@@ -11,7 +12,7 @@ namespace Cinema
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
 
@@ -40,8 +41,14 @@ namespace Cinema
             builder.Services.AddScoped<IDashboardService, DashboardService>();
             builder.Services.AddScoped<IEmailSender, EmailSender>();
             builder.Services.AddControllersWithViews();
+            builder.Services.AddScoped<IDbInitializer, DbInitializer>();
 
             var app = builder.Build();
+            using (var scope = app.Services.CreateScope())
+            {
+                var dbInitializer = scope.ServiceProvider.GetRequiredService<IDbInitializer>();
+                await dbInitializer.InitializeAsync();
+            }
 
             if (!app.Environment.IsDevelopment())
             {
