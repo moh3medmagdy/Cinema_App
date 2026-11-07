@@ -13,12 +13,12 @@ namespace Cinema.Utilities
                 EnableSsl = true,
                 UseDefaultCredentials = false,
                 Credentials = new NetworkCredential(
-                    "shahd.abdelrahman.eelu@gmail.com",
+                    "mohamedeladawy563@gmail.com",
                     "YOUR_APP_PASSWORD")
             };
 
             var message = new MailMessage(
-                "shahd.abdelrahman.eelu@gmail.com",
+                "mohamedeladawy563@gmail.com",
                 email,
                 subject,
                 htmlMessage)
