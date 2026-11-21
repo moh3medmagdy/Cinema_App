@@ -1,5 +1,6 @@
 ﻿using Cinema.Data;
 using Cinema.Models;
+using Cinema.Utilities;
 using Cinema.ViewModels;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
@@ -55,12 +56,13 @@ namespace Cinema.Controllers
             {
                 var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
                 var link = Url.Action("ConfirmEmail", "Account",
-                    new { area = "", id = user.Id, token }, Request.Scheme);
+                    new { area = "Identity", id = user.Id, token }, Request.Scheme);
 
                 await _emailSender.SendEmailAsync(user.Email!, "Confirm your email",
                     $"<h1>Please click <a href='{link}'>here</a> to confirm your email</h1>");
 
                 TempData["Message"] = "Registered successfully. Please check your email to confirm your account.";
+                await _userManager.AddToRoleAsync(user, CD.CUSTOMER_ROLE);
                 return RedirectToAction(nameof(Login));
             }
 
@@ -115,7 +117,7 @@ namespace Cinema.Controllers
             if (!result.Succeeded)
             {
                 if (result.IsLockedOut)
-                    ModelState.AddModelError("", "too many attempts please try again later");
+                    ModelState.AddModelError("", "You are locked please try again later.");
                 else if (result.IsNotAllowed)
                     ModelState.AddModelError("", "please confirm your email first");
                 else
@@ -125,6 +127,12 @@ namespace Cinema.Controllers
             }
 
             return RedirectToAction("Index", "Home", new { area = "Customer" });
+        }
+        [HttpGet]
+        public async Task<IActionResult> Logout()
+        {
+            await _signInManager.SignOutAsync();
+            return RedirectToAction(nameof(Login));
         }
 
         [HttpGet]
@@ -157,7 +165,7 @@ namespace Cinema.Controllers
 
             var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
             var link = Url.Action("ConfirmEmail", "Account",
-                new { area = "", id = user.Id, token }, Request.Scheme);
+                new { area = "Identity", id = user.Id, token }, Request.Scheme);
 
             await _emailSender.SendEmailAsync(user.Email!, "Confirm your email",
                 $"<h1>Please click <a href='{link}'>here</a> to confirm your email</h1>");
@@ -166,7 +174,7 @@ namespace Cinema.Controllers
             return RedirectToAction(nameof(Login));
         }
 
-        
+
 
         [HttpGet]
         public IActionResult ForgetPassword()
@@ -190,7 +198,7 @@ namespace Cinema.Controllers
                 return RedirectToAction(nameof(Login));
             }
 
-          
+
             var recent = await _context.ApplicationUserOTPs
                 .CountAsync(o => o.ApplicationUserId == user.Id &&
                                  o.CreateAt > DateTime.UtcNow.AddHours(-1));
@@ -253,7 +261,7 @@ namespace Cinema.Controllers
                 return View(vm);
             }
 
-           
+
             otp.IsValid = false;
             await _context.SaveChangesAsync();
 
@@ -290,8 +298,16 @@ namespace Cinema.Controllers
                 return View(vm);
             }
 
+
             TempData["Message"] = "Password changed successfully. You can login now.";
             return RedirectToAction(nameof(Login));
+        }
+        [HttpGet]
+        public IActionResult AccessDenied()
+        {
+
+
+            return View();
         }
     }
 }

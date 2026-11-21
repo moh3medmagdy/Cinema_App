@@ -1,5 +1,4 @@
-﻿
-@model List<global::Cinema.Models.Movie>
+﻿@model List<global::Cinema.Models.Movie>
 
 @{
     ViewData["Title"] = "Movies";
@@ -138,28 +137,40 @@
 
                         </div>
 
-                        <!-- Booking Button -->
-                        <div class="card-footer bg-transparent pb-3">
+                        <!-- Actions -->
+                        <div class="card-footer bg-transparent border-top-0 pb-3">
+                            <div class="d-flex gap-2">
 
-                            @if (item.Status)
-                            {
+                                <!-- Details -->
                                 <a asp-area="Customer"
-                                   asp-controller="Bookings"
-                                   asp-action="Book"
+                                   asp-controller="Movies"
+                                   asp-action="ProductDetails"
                                    asp-route-id="@item.Id"
-                                   class="btn btn-success w-100">
-                                    Book Now
+                                   class="btn btn-outline-primary w-50">
+                                    Details
                                 </a>
-                            }
-                            else
-                            {
-                                <button type="button"
-                                        class="btn btn-secondary w-100"
-                                        disabled>
-                                    Not Available
-                                </button>
-                            }
 
+                                <!-- Booking Button -->
+                                @if (item.Status)
+                                {
+                                    <a asp-area="Customer"
+                                       asp-controller="Bookings"
+                                       asp-action="Book"
+                                       asp-route-id="@item.Id"
+                                       class="btn btn-success w-50">
+                                        Book Now
+                                    </a>
+                                }
+                                else
+                                {
+                                    <button type="button"
+                                            class="btn btn-secondary w-50"
+                                            disabled>
+                                        Not Available
+                                    </button>
+                                }
+
+                            </div>
                         </div>
 
                     </div>
@@ -224,4 +235,3 @@
     }
 
 </div>
-

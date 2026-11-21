@@ -1,0 +1,165 @@
+﻿@model global::Cinema.ViewModels.MovieWithRelatedVM
+@using Cinema.Models
+
+@{
+    ViewData["Title"] = Model.Movie.Name;
+}
+
+<section class="py-5">
+    <div class="container px-4 px-lg-5 my-5">
+        <div class="row gx-4 gx-lg-5 align-items-center">
+
+            <div class="col-md-6">
+                @if (!string.IsNullOrWhiteSpace(Model.Movie.MainImg))
+                {
+                    <img class="card-img-top mb-3 mb-md-0 rounded"
+                         src="@Url.Content("~/images/" + Model.Movie.MainImg)"
+                         alt="@Model.Movie.Name"
+                         style="max-height: 600px; width: 100%; object-fit: contain;"
+                         onerror="this.style.display='none'" />
+                }
+
+                @if (Model.Movie.SubImages != null && Model.Movie.SubImages.Any())
+                {
+                    <div class="d-flex flex-wrap gap-2 mt-3">
+                        @foreach (var sub in Model.Movie.SubImages)
+                        {
+                            <img src="@Url.Content("~/images/" + sub.Img)"
+                                 alt="Additional image"
+                                 class="rounded border"
+                                 style="width: 70px; height: 70px; object-fit: cover;"
+                                 onerror="this.style.display='none'" />
+                        }
+                    </div>
+                }
+            </div>
+
+            <div class="col-md-6">
+                <div class="small mb-1 text-muted">
+                    Date: @Model.Movie.DateTime.ToString("yyyy-MM-dd")
+                    @if (Model.Movie.Category != null)
+                    {
+                        <span> | Category: @Model.Movie.Category.Name</span>
+                    }
+                    @if (Model.Movie.Cinema != null)
+                    {
+                        <span> | Cinema: @Model.Movie.Cinema.Name</span>
+                    }
+                </div>
+
+                <div class="d-flex align-items-center gap-2 mb-2">
+                    <h1 class="display-5 fw-bolder mb-0">@Model.Movie.Name</h1>
+                    @if (Model.Movie.Status)
+                    {
+                        <span class="badge bg-success">Available</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-danger">Not Available</span>
+                    }
+                </div>
+
+                <div class="fs-5 mb-4">
+                    <span>@Model.Movie.Price</span>
+                </div>
+
+                <p class="lead">@Model.Movie.Des</p>
+
+                <div class="mb-4">
+                    <strong>Actors:</strong>
+                    @if (Model.Movie.Actors != null && Model.Movie.Actors.Any())
+                    {
+                        <span>@string.Join(", ", Model.Movie.Actors.Select(a => $"{a.FirstName} {a.LastName}"))</span>
+                    }
+                    else
+                    {
+                        <span class="text-muted">No actors assigned</span>
+                    }
+                </div>
+
+                <form asp-area="Customer"
+                      asp-controller="Cart"
+                      asp-action="AddToCart"
+                      method="post"
+                      class="d-flex flex-wrap gap-2 align-items-center">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="id" value="@Model.Movie.Id" />
+
+                    @if (Model.Movie.Status)
+                    {
+                        <input class="form-control text-center me-2"
+                               id="inputQuantity"
+                               name="quantity"
+                               type="number"
+                               value="1"
+                               min="1"
+                               style="max-width: 4rem" />
+
+                        <button class="btn btn-outline-dark flex-shrink-0" type="submit">
+                            Add to Cart
+                        </button>
+                    }
+                    else
+                    {
+                        <button class="btn btn-secondary flex-shrink-0" type="button" disabled>
+                            Not Available
+                        </button>
+                    }
+
+                    <a asp-area="Customer"
+                       asp-controller="Movies"
+                       asp-action="Index"
+                       class="btn btn-outline-secondary">
+                        Back to Movies
+                    </a>
+                </form>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<section class="py-5 bg-light">
+    <div class="container px-4 px-lg-5 mt-5">
+        <h2 class="fw-bolder mb-4">Related Movies</h2>
+        <div class="row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-4 justify-content-center">
+            @if (Model.RelatedMovies != null && Model.RelatedMovies.Any())
+            {
+                @foreach (var item in Model.RelatedMovies)
+                {
+                    <div class="col mb-5">
+                        <div class="card h-100">
+                            @if (!string.IsNullOrWhiteSpace(item.MainImg))
+                            {
+                                <img class="card-img-top"
+                                     src="@Url.Content("~/images/" + item.MainImg)"
+                                     alt="@item.Name"
+                                     style="height: 250px; object-fit: cover;"
+                                     onerror="this.style.display='none'" />
+                            }
+
+                            <div class="card-body p-4">
+                                <div class="text-center">
+                                    <h5 class="fw-bolder">@item.Name</h5>
+                                    @item.Price
+                                </div>
+                            </div>
+
+                            <div class="card-footer p-4 pt-0 border-top-0 bg-transparent">
+                                <div class="text-center">
+                                    <a class="btn btn-outline-dark mt-auto"
+                                       asp-area="Customer"
+                                       asp-controller="Movies"
+                                       asp-action="ProductDetails"
+                                       asp-route-id="@item.Id">
+                                        View Details
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+    </div>
+</section>

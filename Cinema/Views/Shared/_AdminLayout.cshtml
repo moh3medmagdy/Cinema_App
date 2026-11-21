@@ -1,10 +1,9 @@
-﻿
-@{
-    var ctrl = ViewContext.RouteData.Values["controller"]?.ToString();
-    var area = ViewContext.RouteData.Values["area"]?.ToString();
+﻿﻿@{
+var ctrl = ViewContext.RouteData.Values["controller"]?.ToString();
+var area = ViewContext.RouteData.Values["area"]?.ToString();
 
-    string Active(string c) =>
-        ctrl == c && area == "Admin" ? "active" : "";
+string Active(string c) =>
+    ctrl == c && area == "Admin" ? "active" : "";
 }
 
 <!DOCTYPE html>
@@ -27,16 +26,16 @@
     <link href="~/falcon/assets/css/user.min.css" rel="stylesheet" id="user-style-default">
 
     <script>
-        var isRTL = JSON.parse(localStorage.getItem('isRTL'));
+            var isRTL = JSON.parse(localStorage.getItem('isRTL'));
 
-        if (isRTL) {
-            document.getElementById('style-default').setAttribute('disabled', true);
-            document.getElementById('user-style-default').setAttribute('disabled', true);
-            document.querySelector('html').setAttribute('dir', 'rtl');
-        } else {
-            document.getElementById('style-rtl').setAttribute('disabled', true);
-            document.getElementById('user-style-rtl').setAttribute('disabled', true);
-        }
+            if (isRTL) {
+                document.getElementById('style-default').setAttribute('disabled', true);
+                document.getElementById('user-style-default').setAttribute('disabled', true);
+                document.querySelector('html').setAttribute('dir', 'rtl');
+            } else {
+                document.getElementById('style-rtl').setAttribute('disabled', true);
+                document.getElementById('user-style-rtl').setAttribute('disabled', true);
+            }
     </script>
 </head>
 
@@ -347,6 +346,35 @@
                                 </div>
                             </div>
                         </li>
+
+                        <!-- Welcome / Logout -->
+                        @if (User.Identity != null && User.Identity.IsAuthenticated)
+                        {
+                            <li class="nav-item">
+                                <span class="nav-link px-2">Welcome @User.Identity.Name</span>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link px-2"
+                                   asp-area="Identity"
+                                   asp-controller="Account"
+                                   asp-action="Logout">Logout</a>
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link px-2"
+                                   asp-area="Identity"
+                                   asp-controller="Account"
+                                   asp-action="Login">Login</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link px-2"
+                                   asp-area="Identity"
+                                   asp-controller="Account"
+                                   asp-action="Register">Register</a>
+                            </li>
+                        }
 
                         <!-- Avatar -->
                         <li class="nav-item">

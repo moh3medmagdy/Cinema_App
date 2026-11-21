@@ -1,4 +1,5 @@
 ﻿using Cinema.Services;
+using Cinema.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Cinema.Areas.Customer.Controllers
@@ -23,6 +24,27 @@ namespace Cinema.Areas.Customer.Controllers
             ViewBag.TotalMovies = result.TotalCount;
 
             return View(result.Items);
+        }
+        [HttpGet]
+        public IActionResult ProductDetails(int id)
+        {
+            var movie = _movieService.GetByIdWithDetails(id);
+
+            if (movie == null)
+                return NotFound();
+
+            var pagedResult = _movieService.GetPaged(null, 1, 10);
+
+            var vm = new MovieWithRelatedVM
+            {
+                Movie = movie,
+                RelatedMovies = pagedResult.Items
+                    .Where(m => m.Id != id)
+                    .Take(4)
+                    .ToList()
+            };
+
+            return View(vm);
         }
     }
 }

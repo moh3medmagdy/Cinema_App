@@ -1,10 +1,13 @@
 ﻿using Cinema.Models;
 using Cinema.Services;
+using Cinema.Utilities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Cinema.Areas.Admin.Controllers
 {
     [Area("Admin")]
+    [Authorize(Roles = $"{CD.SUPER_ADMIN_ROLE},{CD.ADMIN_ROLE},{CD.EMPLOYEE_ROLE}")]
     public class CategoriesController : Controller
     {
         private readonly ICategoryService _categoryService;
@@ -34,10 +37,11 @@ namespace Cinema.Areas.Admin.Controllers
 
             _categoryService.Create(category);
 
-            TempData["Success"] = "Category added successfully.";
+            TempData["success"] = "Category added successfully.";
             return RedirectToAction(nameof(Index));
         }
 
+        [Authorize(Roles = $"{CD.SUPER_ADMIN_ROLE},{CD.ADMIN_ROLE}")]
         [HttpGet]
         public IActionResult Edit(int id)
         {
@@ -49,6 +53,7 @@ namespace Cinema.Areas.Admin.Controllers
             return View(category);
         }
 
+        [Authorize(Roles = $"{CD.SUPER_ADMIN_ROLE},{CD.ADMIN_ROLE}")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Edit(int id, Category category)
@@ -62,10 +67,11 @@ namespace Cinema.Areas.Admin.Controllers
             if (!_categoryService.Update(category))
                 return NotFound();
 
-            TempData["Success"] = "Category updated successfully.";
+            TempData["success"] = "Category updated successfully.";
             return RedirectToAction(nameof(Index));
         }
 
+        [Authorize(Roles = $"{CD.SUPER_ADMIN_ROLE},{CD.ADMIN_ROLE}")]
         [HttpGet]
         public IActionResult Delete(int id)
         {
@@ -77,6 +83,7 @@ namespace Cinema.Areas.Admin.Controllers
             return View(category);
         }
 
+        [Authorize(Roles = $"{CD.SUPER_ADMIN_ROLE},{CD.ADMIN_ROLE}")]
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public IActionResult DeleteConfirmed(int id)
@@ -84,7 +91,7 @@ namespace Cinema.Areas.Admin.Controllers
             if (!_categoryService.Delete(id))
                 return NotFound();
 
-            TempData["Success"] = "Category deleted successfully.";
+            TempData["success"] = "Category deleted successfully.";
             return RedirectToAction(nameof(Index));
         }
     }

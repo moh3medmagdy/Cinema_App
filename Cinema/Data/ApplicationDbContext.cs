@@ -26,6 +26,9 @@ namespace Cinema.Data
 
         public DbSet<Booking> Bookings { get; set; }
         public DbSet<ApplicationUserOTP> ApplicationUserOTPs { get; set; }
+        public DbSet<CartItem> CartItems { get; set; }
+        public DbSet<PromoCode> PromoCodes { get; set; }
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

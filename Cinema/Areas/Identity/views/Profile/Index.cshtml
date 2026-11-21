@@ -1,0 +1,109 @@
+﻿@model global::Cinema.ViewModels.ProfilePageVM
+<div class="container">
+
+    @if (TempData["success"] != null)
+    {
+        <div class="alert alert-success mt-3">@TempData["success"]</div>
+    }
+
+    <div class="row gutters my-3">
+
+        <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-12">
+            <div class="card h-100">
+                <div class="card-body">
+                    <div class="account-settings">
+                        <div class="user-profile">
+                            <div class="user-avatar">
+                                <img src="https://bootdey.com/img/Content/avatar/avatar7.png" alt="@Model.Profile.FullName" style="width: 90px">
+                            </div>
+                            <h5 class="user-name">@Model.Profile.FullName</h5>
+                            <h6 class="user-email">@Model.Profile.Email</h6>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-9 col-lg-9 col-md-12 col-sm-12 col-12">
+
+            <form asp-action="UpdateProfile" method="post">
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                        <div class="row gutters">
+                            <div class="col-12">
+                                <h6 class="mb-2 text-primary">Personal Details</h6>
+                            </div>
+                            <div class="col-sm-6 col-12">
+                                <div class="form-group">
+                                    <label asp-for="Profile.FullName"></label>
+                                    <input asp-for="Profile.FullName" class="form-control" placeholder="Enter full name" />
+                                    <span asp-validation-for="Profile.FullName" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-sm-6 col-12">
+                                <div class="form-group">
+                                    <label asp-for="Profile.Email"></label>
+                                    <input asp-for="Profile.Email" class="form-control" disabled />
+                                </div>
+                            </div>
+                            <div class="col-sm-6 col-12">
+                                <div class="form-group">
+                                    <label asp-for="Profile.PhoneNumber"></label>
+                                    <input asp-for="Profile.PhoneNumber" class="form-control" placeholder="Enter phone number" />
+                                    <span asp-validation-for="Profile.PhoneNumber" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="text-right">
+                            <button type="reset" class="btn btn-secondary">Cancel</button>
+                            <button type="submit" class="btn btn-primary">Update</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+
+            <form asp-action="UpdatePassword" method="post">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="row gutters">
+                            <div class="col-12">
+                                <h6 class="mb-2 text-primary">Update Password</h6>
+                            </div>
+                            <div class="col-md-4 col-12">
+                                <div class="form-group">
+                                    <label asp-for="Password.CurrentPassword"></label>
+                                    <input asp-for="Password.CurrentPassword" type="password" class="form-control" autocomplete="current-password" />
+                                    <span asp-validation-for="Password.CurrentPassword" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-12">
+                                <div class="form-group">
+                                    <label asp-for="Password.NewPassword"></label>
+                                    <input asp-for="Password.NewPassword" type="password" class="form-control" autocomplete="new-password" />
+                                    <span asp-validation-for="Password.NewPassword" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-12">
+                                <div class="form-group">
+                                    <label asp-for="Password.ConfirmNewPassword"></label>
+                                    <input asp-for="Password.ConfirmNewPassword" type="password" class="form-control" autocomplete="new-password" />
+                                    <span asp-validation-for="Password.ConfirmNewPassword" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <button type="submit" class="btn btn-primary">Update Password</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

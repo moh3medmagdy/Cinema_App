@@ -7,6 +7,7 @@ using Cinema.Utilities.DbInitializer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
+using Stripe;
 
 namespace Cinema
 {
@@ -30,6 +31,31 @@ namespace Cinema
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultTokenProviders();
 
+            builder.Services.ConfigureApplicationCookie(options =>
+            {
+
+                options.LoginPath = "/Identity/Account/Login";
+
+                options.AccessDeniedPath = "/Identity/Account/AccessDenied";
+
+            });
+
+            builder.Services.Configure<SecurityStampValidatorOptions>(options =>
+            {
+                options.ValidationInterval = TimeSpan.FromMinutes(1);
+            });
+
+
+            builder.Services.AddScoped<ICartService, CartService>();
+
+            builder.Services.AddDistributedMemoryCache();
+            builder.Services.AddSession(options =>
+            {
+                options.IdleTimeout = TimeSpan.FromMinutes(30);
+                options.Cookie.HttpOnly = true;
+                options.Cookie.IsEssential = true;
+            });
+
             builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 
             builder.Services.AddScoped<IBookingService, BookingService>();
@@ -43,6 +69,9 @@ namespace Cinema
             builder.Services.AddControllersWithViews();
             builder.Services.AddScoped<IDbInitializer, DbInitializer>();
 
+
+
+            StripeConfiguration.ApiKey = builder.Configuration["Stripe:SecretKey"];
             var app = builder.Build();
             using (var scope = app.Services.CreateScope())
             {
@@ -55,6 +84,8 @@ namespace Cinema
                 app.UseExceptionHandler("/Home/Error");
                 app.UseHsts();
             }
+         
+
 
             app.UseHttpsRedirection();
 
@@ -72,7 +103,7 @@ namespace Cinema
 
             app.MapControllerRoute(
                 name: "default",
-                pattern: "{controller=Dashboard}/{action=Index}/{id?}"
+                pattern: "{area=Customer}/{controller=Home}/{action=Index}/{id?}"
             );
 
             app.MapGet("/", () => Results.Redirect("/Admin/Dashboard"));

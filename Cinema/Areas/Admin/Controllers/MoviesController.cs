@@ -1,5 +1,6 @@
 ﻿using Cinema.Models;
 using Cinema.Services;
+using Cinema.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System;
@@ -27,7 +28,7 @@ namespace Cinema.Areas.Admin.Controllers
             _actorService = actorService;
         }
 
-       
+
         public IActionResult Index(string? searchString, int page = 1)
         {
             var result = _movieService.GetPaged(searchString, page, 6);
@@ -40,7 +41,7 @@ namespace Cinema.Areas.Admin.Controllers
             return View(result.Items);
         }
 
-       
+
         [HttpGet]
         public IActionResult Create()
         {
@@ -53,7 +54,7 @@ namespace Cinema.Areas.Admin.Controllers
             });
         }
 
-       
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Create(
@@ -81,7 +82,7 @@ namespace Cinema.Areas.Admin.Controllers
             return View(movie);
         }
 
-       
+
         [HttpGet]
         public IActionResult Edit(int id)
         {
@@ -98,7 +99,7 @@ namespace Cinema.Areas.Admin.Controllers
             return View("Edit", movie);
         }
 
-      
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Edit(
@@ -140,7 +141,7 @@ namespace Cinema.Areas.Admin.Controllers
             return View("Edit", movie);
         }
 
-       
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Delete(int id)
@@ -172,6 +173,27 @@ namespace Cinema.Areas.Admin.Controllers
 
             ViewBag.Actors = new MultiSelectList(
                 actors, "Id", "FullName", selectedActorIds);
+        }
+        [HttpGet]
+        public IActionResult ProductDetails(int id)
+        {
+            var movie = _movieService.GetByIdWithDetails(id);
+
+            if (movie == null)
+                return NotFound();
+
+            var pagedResult = _movieService.GetPaged(null, 1, 10);
+
+            var vm = new MovieWithRelatedVM
+            {
+                Movie = movie,
+                RelatedMovies = pagedResult.Items
+                    .Where(m => m.Id != id)
+                    .Take(4)
+                    .ToList()
+            };
+
+            return View(vm);
         }
     }
 }
